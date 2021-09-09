@@ -1,9 +1,7 @@
 /* @flow */
 
 import AbstractMethod from './AbstractMethod';
-import * as UI from '../../constants/ui';
 import { validateParams } from './helpers/paramsValidator';
-import { UiMessage } from '../../message/builder';
 
 import type { CoreMessage } from '../../types';
 import type { MessageType } from '../../types/trezor/protobuf';
@@ -40,29 +38,6 @@ export default class ApplySettings extends AbstractMethod {
             display_rotation: payload.display_rotation,
             safety_checks: payload.safety_checks,
         };
-    }
-
-    async confirmation() {
-        // wait for popup window
-        await this.getPopupPromise().promise;
-        // initialize user response promise
-        const uiPromise = this.createUiPromise(UI.RECEIVE_CONFIRMATION, this.device);
-
-        // request confirmation view
-        this.postMessage(
-            UiMessage(UI.REQUEST_CONFIRMATION, {
-                view: 'device-management',
-                customConfirmButton: {
-                    className: 'confirm',
-                    label: 'Proceed',
-                },
-                label: 'Do you really want to change device settings?',
-            }),
-        );
-
-        // wait for user action
-        const uiResp = await uiPromise.promise;
-        return uiResp.payload;
     }
 
     async run() {

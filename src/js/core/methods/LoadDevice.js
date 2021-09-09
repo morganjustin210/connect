@@ -2,7 +2,6 @@
 
 import AbstractMethod from './AbstractMethod';
 import { UI, ERRORS } from '../../constants';
-import { UiMessage } from '../../message/builder';
 import { validateParams } from './helpers/paramsValidator';
 import type { CoreMessage } from '../../types';
 import type { MessageType } from '../../types/trezor/protobuf';
@@ -42,32 +41,6 @@ export default class LoadDevice extends AbstractMethod {
             skip_checksum: payload.skipChecksum,
             u2f_counter: payload.u2fCounter || Math.floor(Date.now() / 1000),
         };
-    }
-
-    async confirmation() {
-        if (this.confirmed) return true;
-        // wait for popup window
-        await this.getPopupPromise().promise;
-        // initialize user response promise
-        const uiPromise = this.createUiPromise(UI.RECEIVE_CONFIRMATION, this.device);
-
-        // request confirmation view
-        this.postMessage(
-            UiMessage(UI.REQUEST_CONFIRMATION, {
-                view: 'device-management',
-                customConfirmButton: {
-                    className: 'wipe',
-                    label: `Load ${this.device.toMessageObject().label}`,
-                },
-                label: 'Are you sure you want to load your device?',
-            }),
-        );
-
-        // wait for user action
-        const uiResp = await uiPromise.promise;
-
-        this.confirmed = uiResp.payload;
-        return this.confirmed;
     }
 
     async run() {

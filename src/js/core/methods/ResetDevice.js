@@ -2,7 +2,6 @@
 
 import AbstractMethod from './AbstractMethod';
 import * as UI from '../../constants/ui';
-import { UiMessage } from '../../message/builder';
 import { validateParams, getFirmwareRange } from './helpers/paramsValidator';
 import type { CoreMessage } from '../../types';
 import type { MessageType } from '../../types/trezor/protobuf';
@@ -48,28 +47,6 @@ export default class ResetDevice extends AbstractMethod {
             no_backup: payload.no_backup,
             backup_type: payload.backup_type,
         };
-    }
-
-    async confirmation() {
-        if (this.confirmed) return true;
-        // wait for popup window
-        await this.getPopupPromise().promise;
-        // initialize user response promise
-        const uiPromise = this.createUiPromise(UI.RECEIVE_CONFIRMATION, this.device);
-
-        // request confirmation view
-        this.postMessage(
-            UiMessage(UI.REQUEST_CONFIRMATION, {
-                view: 'device-management',
-                label: 'Do you really you want to create a new wallet?',
-            }),
-        );
-
-        // wait for user action
-        const uiResp = await uiPromise.promise;
-
-        this.confirmed = uiResp.payload;
-        return this.confirmed;
     }
 
     async run() {

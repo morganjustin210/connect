@@ -3,7 +3,6 @@ import { getBinary, modifyFirmware } from '@trezor/rollout';
 import AbstractMethod from './AbstractMethod';
 import { UI, ERRORS } from '../../constants';
 import { uploadFirmware } from './helpers/uploadFirmware';
-import { UiMessage } from '../../message/builder';
 import { validateParams } from './helpers/paramsValidator';
 import { getReleases } from '../../data/FirmwareInfo';
 
@@ -48,29 +47,6 @@ export default class FirmwareUpdate extends AbstractMethod {
             binary: payload.binary,
             intermediary: payload.intermediary,
         };
-    }
-
-    async confirmation() {
-        // wait for popup window
-        await this.getPopupPromise().promise;
-        // initialize user response promise
-        const uiPromise = this.createUiPromise(UI.RECEIVE_CONFIRMATION, this.device);
-
-        // request confirmation view
-        this.postMessage(
-            UiMessage(UI.REQUEST_CONFIRMATION, {
-                view: 'device-management',
-                customConfirmButton: {
-                    className: 'wipe',
-                    label: 'Proceed',
-                },
-                label: 'Do you want to update firmware? Never do this without your recovery card.',
-            }),
-        );
-
-        // wait for user action
-        const uiResp = await uiPromise.promise;
-        return uiResp.payload;
     }
 
     async run() {
