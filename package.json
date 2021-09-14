@@ -129,6 +129,6 @@
         "keccak": "^3.0.1",
         "node-fetch": "^2.6.1",
         "parse-uri": "^1.0.3",
-        "tiny-worker": "^2.3.0",
+        "tiny-worker": "^2.3.0"
     }
 }
